@@ -52,14 +52,18 @@ class Mc:
         # Obtener todos los registros y agregarlos a la tabla
         registros = self.__get_record_instance.get_all_records()
 
+        # Imprimir los registros para verificar qué datos se reciben
+        print("Registros recibidos:", registros)  # Agregar esta línea
+
         # Comprobación de registros
         if registros:
-            # Ordenar los registros por nombre
-            registros_ordenados = sorted(registros, key=lambda x: x.get("nombre", "").lower())  # Ordenar sin distinción entre mayúsculas y minúsculas
+            # Ordenar los registros por ID
+            registros_ordenados = sorted(registros, key=lambda x: int(x.get("id", 0)))
             for registro in registros_ordenados:
+                # Asegúrate de que todos los nombres de campo son correctos
                 nombre = registro.get("nombre", "")
-                ciudad = registro.get("ciudad", "")  # Asegúrate de que la clave sea correcta
-                circuito = registro.get("circuito", "")  # Asegúrate de que la clave sea correcta
+                ciudad = registro.get("Ciudad", "")  # Asegúrate de que el nombre es correcto
+                circuito = registro.get("circuito", "")
 
                 self.tree.insert("", "end", values=(registro["id"], nombre, ciudad, circuito))
         else:
@@ -83,8 +87,8 @@ class Mc:
                 # Verificar si el ID coincide con el término de búsqueda
                 if search_id == registro["id"]:
                     nombre = registro.get("nombre", "")
-                    ciudad = registro.get("ciudad", "")  # Asegúrate de que la clave sea correcta
-                    circuito = registro.get("circuito", "")  # Asegúrate de que la clave sea correcta
+                    ciudad = registro.get("ciudad", "")
+                    circuito = registro.get("circuito", "")
                     self.tree.insert("", "end", values=(registro["id"], nombre, ciudad, circuito))
                     break  # Salir del bucle después de encontrar el registro
             else:
