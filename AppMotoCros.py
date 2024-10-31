@@ -2,7 +2,7 @@ import tkinter as tk
 from ClassMc import Mc
 from ClassRecord import classRecord
 
-class AppDB:
+class AppMotocross:
     def __init__(self):
         self.root = tk.Tk()  # Crear la ventana principal
         self.root.title("Registro Motocross")
@@ -16,7 +16,7 @@ class AppDB:
 
 # Ejecución de la aplicación
 if __name__ == "__main__":
-    AppDB()  # Instancia y ejecuta la aplicación
+    AppMotocross()  # Instancia y ejecuta la aplicación
 
 
 

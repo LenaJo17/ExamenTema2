@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-import random
 
 class Mc:
     """Clase para mostrar todos los registros en una tabla interactiva."""
@@ -16,11 +15,15 @@ class Mc:
         # Botón para buscar registros
         tk.Button(master, text="Buscar Registro", command=self.buscar_registro).pack(pady=5)
 
-        # Botón para cargar todos los registros aleatorios
-        tk.Button(master, text="Cargar Registros Aleatorios", command=self.cargar_registros_aleatorios).pack(pady=5)
+        # Botón para cargar todos los registros ordenados
+        tk.Button(master, text="Cargar Registros Ordenados", command=self.cargar_registros_ordenados).pack(pady=5)
+
+        # Frame para contener el Treeview y el Scrollbar
+        self.frame = tk.Frame(master)
+        self.frame.pack(pady=10)
 
         # Crear el Treeview para mostrar los registros en formato de tabla
-        self.tree = ttk.Treeview(master, columns=("ID", "Nombre", "Ciudad", "Circuito"), show="headings")
+        self.tree = ttk.Treeview(self.frame, columns=("ID", "Nombre", "Ciudad", "Circuito"), show="headings")
         self.tree.heading("ID", text="ID")
         self.tree.heading("Nombre", text="Nombre")
         self.tree.heading("Ciudad", text="Ciudad")
@@ -32,11 +35,16 @@ class Mc:
         self.tree.column("Ciudad", width=100)
         self.tree.column("Circuito", width=100)
 
-        # Empaquetar el Treeview en la ventana
-        self.tree.pack(pady=10)
+        # Crear el Scrollbar
+        self.scrollbar = tk.Scrollbar(self.frame, orient="vertical", command=self.tree.yview)
+        self.tree.config(yscrollcommand=self.scrollbar.set)
 
-    def cargar_registros_aleatorios(self):
-        """Carga todos los registros desde la API y los muestra en la tabla de manera aleatoria."""
+        # Empaquetar el Treeview y el Scrollbar
+        self.tree.pack(side="left", fill="both", expand=True)
+        self.scrollbar.pack(side="right", fill="y")
+
+    def cargar_registros_ordenados(self):
+        """Carga todos los registros desde la API y los muestra en la tabla de manera ordenada."""
         # Limpiar la tabla antes de cargar nuevos registros
         for item in self.tree.get_children():
             self.tree.delete(item)
@@ -46,16 +54,14 @@ class Mc:
 
         # Comprobación de registros
         if registros:
-            # Barajar los registros
-            random.shuffle(registros)
-            for registro in registros:
+            # Ordenar los registros por nombre
+            registros_ordenados = sorted(registros, key=lambda x: x.get("nombre", "").lower())  # Ordenar sin distinción entre mayúsculas y minúsculas
+            for registro in registros_ordenados:
                 nombre = registro.get("nombre", "")
-                ciudad = registro.get("Ciudad", "")
-                circuito = registro.get("circuito", "")
+                ciudad = registro.get("ciudad", "")  # Asegúrate de que la clave sea correcta
+                circuito = registro.get("circuito", "")  # Asegúrate de que la clave sea correcta
 
-                self.tree.insert("", "end", values=(
-                    registro["id"], nombre, ciudad, circuito
-                ))
+                self.tree.insert("", "end", values=(registro["id"], nombre, ciudad, circuito))
         else:
             messagebox.showinfo("Información", "No se encontraron registros.")
 
@@ -77,11 +83,9 @@ class Mc:
                 # Verificar si el ID coincide con el término de búsqueda
                 if search_id == registro["id"]:
                     nombre = registro.get("nombre", "")
-                    ciudad = registro.get("Ciudad", "")
-                    circuito = registro.get("circuito", "")
-                    self.tree.insert("", "end", values=(
-                        registro["id"], nombre, ciudad, circuito
-                    ))
+                    ciudad = registro.get("ciudad", "")  # Asegúrate de que la clave sea correcta
+                    circuito = registro.get("circuito", "")  # Asegúrate de que la clave sea correcta
+                    self.tree.insert("", "end", values=(registro["id"], nombre, ciudad, circuito))
                     break  # Salir del bucle después de encontrar el registro
             else:
                 messagebox.showinfo("Información", "No se encontró el registro con ese ID.")
